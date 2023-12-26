@@ -134,8 +134,7 @@ const Settings: React.FC<{closeNav, theme, setTheme, project, setProject}> =
                     console.log(`set Lean project to: ${ev.target.value}`)
                     }} >
                 <option value="plain">Stable Lean</option>
-                <option value="MathlibLatest">Latest Mathlib</option>
-                <option value="DuperDemo">Latest Duper</option>
+                <option value="lean-tactics">Motivated Proof Interface</option>
               </select>
             </p>
 
