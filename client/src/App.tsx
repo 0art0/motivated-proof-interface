@@ -54,7 +54,7 @@ const App: React.FC = () => {
 
   const [content, setContent] = useState<string>('')
   const [url, setUrl] = useState<string>(null)
-  const [project, setProject] = useState<string>('MathlibLatest')
+  const [project, setProject] = useState<string>('lean-tactics')
   const [contentFromUrl, setContentFromUrl] = useState<string>(null)
 
   const readHash = () => {
