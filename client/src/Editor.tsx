@@ -195,7 +195,7 @@ const Editor: React.FC<{setRestart?, showEditor:boolean, onDidChangeContent?, va
         <div ref={codeviewRef} className="codeview"
           style={{width : '100%', height: '100%', display: showEditor ? 'block' : 'none'}}></div>
         <div ref={infoviewRef} className="vscode-light infoview"
-          style={config.verticalLayout ? {width : '100%'} : {height: '100%'}}></div>
+          style={config.verticalLayout ? {width : '100%', margin:'0 auto'} : {height: '100%', margin:'0 auto'}}></div>
       </Split>
       {restartMessage ?
         <Notification
