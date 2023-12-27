@@ -21,8 +21,8 @@ import { monacoSetup } from './monacoSetup'
 
 monacoSetup()
 
-const Editor: React.FC<{setRestart?, onDidChangeContent?, value: string, theme: string, project: string}> =
-    ({setRestart, onDidChangeContent, value, theme, project}) => {
+const Editor: React.FC<{setRestart?, showEditor:boolean, onDidChangeContent?, value: string, theme: string, project: string}> =
+    ({setRestart, showEditor, onDidChangeContent, value, theme, project}) => {
   const uri = monaco.Uri.parse(`file:///project/${project}.lean`)
   const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor | null>(null)
   // const [editorApi, setEditorApi] = useState<MyEditorApi | null>(null)
@@ -193,7 +193,7 @@ const Editor: React.FC<{setRestart?, onDidChangeContent?, value: string, theme: 
         direction={config.verticalLayout ? "vertical" : "horizontal"}
         style={{flexDirection: config.verticalLayout ? "column" : "row"}}>
         <div ref={codeviewRef} className="codeview"
-          style={config.verticalLayout ? {width : '100%'} : {height: '100%'}}></div>
+          style={{width : '100%', height: '100%', display: showEditor ? 'block' : 'none'}}></div>
         <div ref={infoviewRef} className="vscode-light infoview"
           style={config.verticalLayout ? {width : '100%'} : {height: '100%'}}></div>
       </Split>

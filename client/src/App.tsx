@@ -13,6 +13,7 @@ import { saveAs } from 'file-saver';
 import Settings from './Settings'
 import Tools from './Tools'
 import Examples from './Examples'
+import EditorVisibilityToggle from './EditorVisibility'
 import LoadingMenu from './LoadingMenu'
 import { config } from './config/config'
 
@@ -54,6 +55,7 @@ const App: React.FC = () => {
 
   const [content, setContent] = useState<string>('')
   const [url, setUrl] = useState<string>(null)
+  const [editorVisible, setEditorVisible] = useState<boolean>(true)
   const [project, setProject] = useState<string>('lean-tactics')
   const [contentFromUrl, setContentFromUrl] = useState<string>(null)
 
@@ -123,7 +125,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     //let args = parseArgs()
-    let _project = (project == 'MathlibLatest' ? null : project)
+    let _project = (project == 'lean-tactics' ? null : project)
     if (content === contentFromUrl) {
       let args = {project: _project, url: encodeURIComponent(url), code: null}
       history.replaceState(undefined, undefined, formatArgs(args))
@@ -167,6 +169,7 @@ const App: React.FC = () => {
         <div className='menu' ref={menuRef}>
           {!config.verticalLayout && <>
             {/* Buttons for desktop version */}
+            <EditorVisibilityToggle editorVisible={editorVisible} setEditorVisible={setEditorVisible} />
             <Examples loadFromUrl={loadFromUrl} openSubmenu={openSubmenu} closeNav={closeNav}/>
             <LoadingMenu loadFromUrl={loadFromUrl} setContent={setContent} openSubmenu={openSubmenu} closeNav={closeNav}/>
           </>
@@ -177,6 +180,7 @@ const App: React.FC = () => {
           <div className={'dropdown' + (navOpen ? '' : ' hidden')}>
             {config.verticalLayout && <>
               {/* Buttons for mobile version */}
+              <EditorVisibilityToggle editorVisible={editorVisible} setEditorVisible={setEditorVisible} />
               <Examples loadFromUrl={loadFromUrl} openSubmenu={openSubmenu} closeNav={closeNav}/>
               <LoadingMenu loadFromUrl={loadFromUrl} setContent={setContent} openSubmenu={openSubmenu} closeNav={closeNav}/>
             </>}
@@ -206,7 +210,7 @@ const App: React.FC = () => {
         </div>
       </div>
       <Suspense fallback={<div className="loading-ring"></div>}>
-        <Editor setRestart={setRestart}
+        <Editor setRestart={setRestart} showEditor={editorVisible}
           value={content} onDidChangeContent={onDidChangeContent} theme={theme} project={project}/>
       </Suspense>
     </div>
