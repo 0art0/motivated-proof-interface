@@ -8,6 +8,7 @@ import Select from '@mui/material/Select';
 import { useWindowDimensions } from './window_width';
 import { Button, FormControl, InputLabel, MenuItem } from '@mui/material';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js'
+import * as lean4webConfig from './config.json'
 
 const Settings: React.FC<{closeNav, theme, setTheme, project, setProject}> =
     ({closeNav, theme, setTheme, project, setProject}) => {
@@ -23,12 +24,16 @@ const Settings: React.FC<{closeNav, theme, setTheme, project, setProject}> =
     If screen width is below 800, default to vertical layout instead. */
   const {width, height} = useWindowDimensions()
   const [verticalLayout, setVerticalLayout] = React.useState(width < 800)
+  const [wordWrap, setWordWrap] = React.useState(true)
+  const [acceptSuggestionOnEnter, setAcceptSuggestionOnEnter] = React.useState(false)
   const [customTheme, setCustomTheme] = React.useState<string>('initial')
 
   // Synchronize state with initial local store
   useEffect(() => {
     let _abbreviationCharacter = window.localStorage.getItem("abbreviationCharacter")
     let _verticalLayout = window.localStorage.getItem("verticalLayout")
+    let _wordWrap = window.localStorage.getItem("wordWrap")
+    let _acceptSuggestionOnEnter = window.localStorage.getItem("acceptSuggestionOnEnter")
     let _theme = window.localStorage.getItem("theme")
     let _savingAllowed = window.localStorage.getItem("savingAllowed")
     let _customTheme = window.localStorage.getItem("customTheme")
@@ -42,6 +47,14 @@ const Settings: React.FC<{closeNav, theme, setTheme, project, setProject}> =
     }
     if (_theme) {
       setTheme(_theme)
+      setSavingAllowed(true)
+    }
+    if (_wordWrap) {
+      setWordWrap(_wordWrap == "true")
+      setSavingAllowed(true)
+    }
+    if (_acceptSuggestionOnEnter) {
+      setAcceptSuggestionOnEnter(_acceptSuggestionOnEnter == "true")
       setSavingAllowed(true)
     }
     if (_customTheme) {
@@ -64,19 +77,25 @@ const Settings: React.FC<{closeNav, theme, setTheme, project, setProject}> =
   useEffect(() => {
     config.abbreviationCharacter = abbreviationCharacter
     config.verticalLayout = verticalLayout
+    config.wordWrap = wordWrap
+    config.acceptSuggestionOnEnter = acceptSuggestionOnEnter
     config.theme = theme
     if (savingAllowed) {
       window.localStorage.setItem("abbreviationCharacter", abbreviationCharacter)
       window.localStorage.setItem("verticalLayout", verticalLayout ? 'true' : 'false')
+      window.localStorage.setItem("wordWrap", wordWrap ? 'true' : 'false')
+      window.localStorage.setItem("acceptSuggestionOnEnter", acceptSuggestionOnEnter ? 'true' : 'false')
       window.localStorage.setItem("theme", theme)
       window.localStorage.setItem("customTheme", customTheme)
     } else {
       window.localStorage.removeItem("abbreviationCharacter")
       window.localStorage.removeItem("verticalLayout")
+      window.localStorage.removeItem("wordWrap")
+      window.localStorage.removeItem("acceptSuggestionOnEnter")
       window.localStorage.removeItem("theme")
       window.localStorage.removeItem("customTheme")
     }
-  }, [savingAllowed, abbreviationCharacter, verticalLayout, theme])
+  }, [savingAllowed, abbreviationCharacter, verticalLayout, wordWrap, acceptSuggestionOnEnter, theme])
 
   const handleChangeSaving = (ev) => {
     if (ev.target.checked) {
@@ -133,8 +152,9 @@ const Settings: React.FC<{closeNav, theme, setTheme, project, setProject}> =
                     setProject(ev.target.value)
                     console.log(`set Lean project to: ${ev.target.value}`)
                     }} >
-                <option value="plain">Stable Lean</option>
-                <option value="lean-tactics">Motivated Proof Interface</option>
+                {lean4webConfig.projects.map(proj =>
+                  <option key={proj.folder} value={proj.folder}>{proj.name ?? proj.folder}</option>
+                )}
               </select>
             </p>
 
@@ -170,6 +190,14 @@ const Settings: React.FC<{closeNav, theme, setTheme, project, setProject}> =
             <p>
               <Switch id="verticalLayout" onChange={handleLayoutChange} checked={verticalLayout} />
               <label htmlFor="verticalLayout">Mobile layout (vertical)</label>
+            </p>
+            <p>
+              <Switch id="wordWrap" onChange={() => {setWordWrap(!wordWrap)}} checked={wordWrap} />
+              <label htmlFor="wordWrap">Wrap code</label>
+            </p>
+            <p>
+              <Switch id="acceptSuggestionOnEnter" onChange={() => {setAcceptSuggestionOnEnter(!acceptSuggestionOnEnter)}} checked={acceptSuggestionOnEnter} />
+              <label htmlFor="acceptSuggestionOnEnter">Accept Suggestion on Enter</label>
             </p>
             <p>
               <Switch id="savingAllowed" onChange={handleChangeSaving} checked={savingAllowed} />

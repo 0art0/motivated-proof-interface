@@ -34,6 +34,13 @@ const Editor: React.FC<{setRestart?, showEditor:boolean, onDidChangeContent?, va
   const [restartMessage, setRestartMessage] = useState<boolean | null>(false)
 
   useEffect(() => {
+    console.log('Font is ready, rescaling editor.')
+    document.fonts.ready.then(function () {
+      monaco.editor.remeasureFonts()
+    })
+  }, [editor])
+
+  useEffect(() => {
     if (['lightPlus', 'custom'].includes(theme)) {
       monaco.editor.setTheme(theme)
     } else {
@@ -58,6 +65,8 @@ const Editor: React.FC<{setRestart?, showEditor:boolean, onDidChangeContent?, va
     if (onDidChangeContent) {
       model.onDidChangeContent(() => onDidChangeContent(model.getValue()))
     }
+    // see available options here:
+    // https://microsoft.github.io/monaco-editor/typedoc/variables/editor.EditorOptions.html
     const editor = monaco.editor.create(codeviewRef.current!, {
       model,
       glyphMargin: true,
@@ -78,7 +87,11 @@ const Editor: React.FC<{setRestart?, showEditor:boolean, onDidChangeContent?, va
       },
       tabSize: 2,
       'semanticHighlighting.enabled': true,
-      theme: 'vs'
+      theme: 'vs',
+      wordWrap: config.wordWrap ? "on" : "off",
+      acceptSuggestionOnEnter: config.acceptSuggestionOnEnter ? "on" : "off",
+      fontFamily: "JuliaMono",
+      wrappingStrategy: "advanced",
     })
     setEditor(editor)
     const abbrevRewriter = new AbbreviationRewriter(new AbbreviationProvider(), model, editor)
@@ -87,7 +100,7 @@ const Editor: React.FC<{setRestart?, showEditor:boolean, onDidChangeContent?, va
       model.dispose();
       abbrevRewriter.dispose();
     }
-  }, [])
+  }, [config, config.wordWrap, config.acceptSuggestionOnEnter])
 
   useEffect(() => {
     const socketUrl = ((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.host + "/websocket" + "/" + project
